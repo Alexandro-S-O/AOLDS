@@ -58,6 +58,80 @@ Node* leftRotate(Node* x){
     return y;
 }
 
+int getBalance(Node* root){
+    if(root == NULL){
+        return 0;
+    }
+    return height(root->left) - height(root->right);
+}
+
+Node* insertNode(Node* node, Item item) {
+    if (node == NULL)
+        return newNode(item);
+
+    if (item.id < node->item.id)
+        node->left = insertNode(node->left, item);
+    else if (item.id > node->item.id)
+        node->right = insertNode(node->right, item);
+    else // Tidak boleh ada duplicate
+        return node;
+
+    node->height = 1 + max(height(node->left), height(node->right));
+
+    int balance = getBalance(node);
+
+    // Left Left Case
+    if (balance > 1 && item.id < node->left->item.id)
+        return rightRotate(node);
+
+    // Right Right Case
+    if (balance < -1 && item.id > node->right->item.id)
+        return leftRotate(node);
+
+    // Left Right Case
+    if (balance > 1 && item.id > node->left->item.id) {
+        node->left = leftRotate(node->left);
+        return rightRotate(node);
+    }
+
+    // Right Left Case
+    if (balance < -1 && item.id < node->right->item.id) {
+        node->right = rightRotate(node->right);
+        return leftRotate(node);
+    }
+
+    return node;
+}
+
+Node* minValueNode(Node* node) {
+    Node* current = node;
+    while (current->left != NULL)
+        current = current->left;
+    return current;
+}
+
+void addItem() {
+    system("cls");
+    Item newItem;
+    printf("Add New Item\n");
+    printf("Enter ID: ");
+    scanf("%d", &newItem.id);
+    if (searchNode(root, newItem.id) != NULL) {
+        printf("Item with this ID already exists!\n");
+        system("pause");
+        return;
+    }
+    printf("Enter Name: ");
+    scanf(" %[^\n]s", newItem.name);
+    printf("Enter Quantity: ");
+    scanf("%d", &newItem.quantity);
+    printf("Enter Price: ");
+    scanf("%f", &newItem.price);
+    root = insertNode(root, newItem);
+    printf("Item added successfully.\n");
+    system("pause");
+}
+
 void menu() {
     int choice;
     do {
@@ -73,6 +147,7 @@ void menu() {
         scanf("%d", &choice);
         switch(choice) {
             case 1: addItem(); break;
+            case 2: ;
             case 0: printf("Exiting program.\n"); break;
             default: printf("Invalid choice. Try again.\n"); system("pause");
         }
