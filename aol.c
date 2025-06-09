@@ -7,6 +7,7 @@
 #define STACK_SIZE 50
 #define QUEUE_SIZE 50
 
+int i;
 // Membuat struct untuk item yang akan digunakan untuk menyimpan item
 typedef struct {
     int id;
@@ -27,7 +28,7 @@ void sa_init(StructArray *sa) {
 
 // Mencari dimana item yang ingin dicari
 int sa_find(StructArray *sa, int id) {
-    for (int i = 0; i < sa->size; i++)
+    for (i = 0; i < sa->size; i++)
         if (sa->items[i].id == id)
             return i;
     return -1;
@@ -55,7 +56,7 @@ void sa_delete(StructArray *sa, int id) {
         return;
     }
     // Menggeser item setelah index yang dihapus ke kiri
-    for (int i = index; i < sa->size - 1; i++) {
+    for (i = index; i < sa->size - 1; i++) {
         sa->items[i] = sa->items[i + 1];
     }
     sa->size--; // Mengurangi ukuran Struct Array
@@ -92,7 +93,7 @@ void ll_clear(LinkedList *ll) {
 // Sync data dari Structure Array
 void ll_sync_from_array(LinkedList *ll, StructArray *sa) {
     ll_clear(ll); //menghapus nodes yang ada di linked list jika ada yang tersisa dari operasi sebelumnya
-    for (int i = sa->size - 1; i >= 0; i--) { //mengambil data dari SA reversed untuk menjaga original ordernya karena pakai insert from head.
+    for (i = sa->size - 1; i >= 0; i--) { //mengambil data dari SA reversed untuk menjaga original ordernya karena pakai insert from head.
         Node *newNode = malloc(sizeof(Node));
         if (newNode == NULL) continue;
         newNode->item = sa->items[i];
@@ -103,13 +104,14 @@ void ll_sync_from_array(LinkedList *ll, StructArray *sa) {
 
 // Display biasa
 void ll_display(LinkedList *ll) {
+    Node *cur;
     if (!ll->head) {
         printf("Linked List is empty.\n");
         return;
     }
     printf("Linked List Items:\n");
     printf("ID\tName\t\tQuantity\n");
-    for (Node *cur = ll->head; cur != NULL; cur = cur->next) {
+    for (cur = ll->head; cur != NULL; cur = cur->next) {
         printf("%d\t%-15s\t%d\n", cur->item.id, cur->item.name, cur->item.quantity);
     }
 }
@@ -149,7 +151,7 @@ void stack_init(Stack *st) {
 
 // Mencari item yang ingin di update
 int stack_find(Stack *st, int id) {
-    for (int i = 0; i <= st->top; i++)
+    for (i = 0; i <= st->top; i++)
         if (st->items[i].id == id)
             return i;
     return -1;
@@ -158,7 +160,7 @@ int stack_find(Stack *st, int id) {
 // Mengambil data dari SA
 void stack_sync_from_array(Stack *st, StructArray *sa) {
     stack_init(st);
-    for (int i = 0; i < sa->size && i < STACK_SIZE; i++) { //mengambil data dari SA dari bawah agar sama ordernya
+    for (i = 0; i < sa->size && i < STACK_SIZE; i++) { //mengambil data dari SA dari bawah agar sama ordernya
         st->items[++st->top] = sa->items[i];
     }
 }
@@ -193,7 +195,7 @@ void queue_init(Queue *q) {
 // Mengambil data dari SA untuk queue (sync untuk tampil)
 void queue_sync_from_array(Queue *q, StructArray *sa) {
     queue_init(q);
-    for (int i = 0; i < sa->size && i < QUEUE_SIZE; i++) {
+    for (i = 0; i < sa->size && i < QUEUE_SIZE; i++) {
         q->rear = (q->rear + 1) % QUEUE_SIZE;
         q->items[q->rear] = sa->items[i];
         q->size++;
@@ -311,7 +313,7 @@ void cl_insert(CircularList *cl, Item item) {
 // Mengambil data yang hanya quantity > 10
 void cl_sync_filtered(CircularList *cl, StructArray *sa) {
     cl_clear(cl);
-    for (int i = 0; i < sa->size; i++) {
+    for (i = 0; i < sa->size; i++) {
         if (sa->items[i].quantity > 10) {
             cl_insert(cl, sa->items[i]);
         }
@@ -409,7 +411,7 @@ int main() {
                 queue_sync_from_array(&q, &sa);
                 bst_free(bst_root); // Melepaskan memori BST sebelumnya
                 bst_root = NULL; // Reset root BST
-                for (int i = 0; i < sa.size; i++)
+                for (i = 0; i < sa.size; i++)
                     bst_root = bst_insert(bst_root, sa.items[i]); // Menyisipkan item ke BST
                 cl_sync_filtered(&cl, &sa); // Sinkronisasi Circular Linked List
                 break;
@@ -437,7 +439,7 @@ int main() {
                     queue_sync_from_array(&q, &sa); // Sinkronisasi Queue
                     bst_free(bst_root); // Melepaskan memori BST
                     bst_root = NULL; // Reset root BST
-                    for (int i = 0; i < sa.size; i++)
+                    for (i = 0; i < sa.size; i++)
                         bst_root = bst_insert(bst_root, sa.items[i]); // Menyisipkan item ke BST
                     cl_sync_filtered(&cl, &sa); // Sinkronisasi Circular Linked List
                 }
@@ -461,7 +463,7 @@ int main() {
                 stack_sync_from_array(&st, &sa);
                 bst_free(bst_root); // Melepaskan memori BST
                 bst_root = NULL; // Reset root BST
-                for (int i = 0; i < sa.size; i++)
+                for (i = 0; i < sa.size; i++)
                     bst_root = bst_insert(bst_root, sa.items[i]); // Menyisipkan item ke BST
                 cl_sync_filtered(&cl, &sa); // Sinkronisasi Circular Linked List
                 break;
